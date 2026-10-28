@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Check package.json framework pins against estate/versions.json.
 
-estate/versions.json is a copy of the estate framework manifest kept in
-roachbait-band/roachbait.band. Every package it lists must carry exactly the
+estate/versions.json holds the pins of the estate framework manifest, without
+its internal notes. Every package it lists must carry exactly the
 manifest specifier in each dependency field of package.json that declares it.
 Packages the manifest names as forbidden must not appear at all. Packages the
 manifest does not list may use ranges.
