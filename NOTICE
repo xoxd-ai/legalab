@@ -1,0 +1,10 @@
+Legalab website
+
+This repository is derived from the site.scaffold public template 1.0.0.
+The template notice follows unchanged.
+
+Public site.scaffold template
+
+Copyright(c)2026 Jess Sullivan, MIT License. Derived from the Nix/Bazel/Just
+static SvelteKit scaffold and shared xoxd public chrome. Dependencies and
+fonts retain their own licenses. The theme carries fonts/OFL.txt and NOTICE.

@@ -1,0 +1,28 @@
+{
+	"schema": 1,
+	"description": "Estate framework version pins. Every package.json that declares one of these packages pins it to exactly this specifier. Packages not listed here use ranges.",
+	"updated": "2026-10-14",
+	"fields": ["dependencies", "devDependencies", "optionalDependencies", "peerDependencies"],
+	"packages": {
+		"@sveltejs/kit": "3.0.1",
+		"svelte": "5.57.2",
+		"vite": "8.3.3",
+		"@sveltejs/vite-plugin-svelte": "7.3.1",
+		"@sveltejs/adapter-auto": "8.0.0",
+		"@sveltejs/adapter-cloudflare": "8.0.0",
+		"@sveltejs/adapter-node": "6.0.0",
+		"@sveltejs/adapter-static": "4.0.0",
+		"typescript": "7.0.2",
+		"vitest": "5.0.3",
+		"@vitest/browser-playwright": "5.0.3",
+		"@vitest/coverage-v8": "5.0.3",
+		"@playwright/test": "1.64.0",
+		"playwright": "1.64.0",
+		"effect": "4.0.2",
+		"@skeletonlabs/skeleton": "5.0.1",
+		"@skeletonlabs/skeleton-svelte": "5.0.1"
+	},
+	"forbidden": {
+		"@typescript/native": "TypeScript 7.0.2 is the `typescript` package itself. An alias that installs another TypeScript under a different name is not allowed."
+	}
+}

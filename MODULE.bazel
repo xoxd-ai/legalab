@@ -1,0 +1,68 @@
+# Legalab website, spawned from the site.scaffold public template 1.0.0
+# (xoxd-ai/site.scaffold public/template at 3d4db5e).
+module(
+    name = "legalab_site",
+    version = "0.0.0",
+    compatibility_level = 1,
+)
+
+bazel_dep(name = "bazel_skylib", version = "1.8.2")
+bazel_dep(name = "platforms", version = "1.0.0")
+bazel_dep(name = "aspect_bazel_lib", version = "2.22.5")
+bazel_dep(name = "rules_pkg", version = "1.1.0")
+
+bazel_dep(name = "rules_nodejs", version = "6.7.3")
+bazel_dep(name = "aspect_rules_js", version = "2.9.1")
+bazel_dep(name = "aspect_rules_ts", version = "3.10.1")
+bazel_dep(name = "aspect_rules_swc", version = "2.6.1")
+
+bazel_dep(name = "tummycrypt_tinyland_color_utils", version = "0.2.3")
+bazel_dep(name = "tummycrypt_vite_plugin_a11y", version = "0.2.4")
+bazel_dep(name = "tummycrypt_vite_plugin_skeleton_colors", version = "0.2.4")
+bazel_dep(name = "tummycrypt_tinyvectors", version = "0.3.7")
+
+node = use_extension("@rules_nodejs//nodejs:extensions.bzl", "node")
+# SvelteKit 3 requires Node >= 22.17.
+node.toolchain(node_version = "22.22.0")
+
+pnpm = use_extension("@aspect_rules_js//npm:extensions.bzl", "pnpm")
+pnpm.pnpm(
+    name = "pnpm",
+    pnpm_version = "10.13.1",
+)
+use_repo(pnpm, "pnpm")
+
+npm = use_extension("@aspect_rules_js//npm:extensions.bzl", "npm")
+npm.npm_translate_lock(
+    name = "npm",
+    npmrc = "//:.npmrc",
+    pnpm_lock = "//:pnpm-lock.yaml",
+    # RU13 patch set (copied from site.scaffold patches/): npm_translate_lock
+    # applies the pnpm patchedDependencies recorded in pnpm-lock.yaml.
+    data = [
+        "//:.pnpmfile.cjs",
+        "//:package.json",
+        "//:patches/@sveltejs__kit@3.0.1.patch",
+        "//:patches/devalue@5.9.4.patch",
+        "//:patches/svelte-check@4.7.6.patch",
+        "//:pnpm-workspace.yaml",
+    ],
+)
+use_repo(npm, "npm")
+
+# TypeScript 7.0.2 (RU13), matching package.json `typescript` exactly.
+typescript = use_extension("@aspect_rules_ts//ts:extensions.bzl", "typescript")
+typescript.deps(version = "7.0.2")
+use_repo(typescript, "npm_typescript")
+
+swc = use_extension("@aspect_rules_swc//swc:extensions.bzl", "swc")
+swc.toolchain(
+    name = "swc",
+    swc_version = "v1.10.12",
+)
+use_repo(swc, "swc_toolchains")
+
+register_toolchains("@swc_toolchains//:all")
+
+bazel_dep(name = "xoxd_public_chrome", version = "0.1.0")
+bazel_dep(name = "xoxd_theme", version = "0.1.1")
