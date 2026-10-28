@@ -1,0 +1,13 @@
+startup --max_idle_secs=120
+common --enable_bzlmod
+common --registry=https://raw.githubusercontent.com/xoxd-ai/bazel-registry/7c09e778e6b67b6c9b0ccdafa967e9bc807ef541
+common --registry=https://bcr.bazel.build
+# TODO(TIN-7656): switch to --lockfile_mode=error once the first lab-host
+# build commits MODULE.bazel.lock. Until then Bazel writes the lock.
+common --lockfile_mode=update
+build --workspace_status_command=scripts/bazel/workspace-status.sh
+build --@aspect_rules_ts//ts:skipLibCheck=always
+build --jobs=4
+build --spawn_strategy=sandboxed,worker,local
+test --test_output=errors
+try-import %workspace%/user.bazelrc

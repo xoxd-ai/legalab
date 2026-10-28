@@ -1,0 +1,36 @@
+{
+	"schema": 1,
+	"description": "Estate framework version manifest (RU5 SSOT). Every package.json in an estate repo that declares one of these packages must pin it to exactly this specifier. Packages not listed here use ranges (RU5).",
+	"updated": "2026-10-14",
+	"rulings": ["RU1", "RU5", "RU13", "RU13b", "RS11", "R-C444"],
+	"source": "U1-probe 2026-10-08T00:40Z (npm latest at probe time); TypeScript per RU13/RU13b; Effect 4.0.2 per R-C444. Matches roachbait.band main after #225 (Kit 3.0.1 / TS 7.0.2).",
+	"fields": ["dependencies", "devDependencies", "optionalDependencies", "peerDependencies"],
+	"packages": {
+		"@sveltejs/kit": "3.0.1",
+		"svelte": "5.57.2",
+		"vite": "8.3.3",
+		"@sveltejs/vite-plugin-svelte": "7.3.1",
+		"@sveltejs/adapter-auto": "8.0.0",
+		"@sveltejs/adapter-cloudflare": "8.0.0",
+		"@sveltejs/adapter-node": "6.0.0",
+		"@sveltejs/adapter-static": "4.0.0",
+		"typescript": "7.0.2",
+		"vitest": "5.0.3",
+		"@vitest/browser-playwright": "5.0.3",
+		"@vitest/coverage-v8": "5.0.3",
+		"@playwright/test": "1.64.0",
+		"playwright": "1.64.0",
+		"effect": "4.0.2",
+		"@skeletonlabs/skeleton": "5.0.1",
+		"@skeletonlabs/skeleton-svelte": "5.0.1"
+	},
+	"forbidden": {
+		"@typescript/native": "RU13: TypeScript 7.0.2 is the `typescript` package itself. The TS 6.0.3 + @typescript/native alias fallback from the U1 probe is not allowed; tool gaps are closed with the shared patch set under patches/ in roachbait.band, or a tool's TS 7 native mode."
+	},
+	"notes": {
+		"typescript": "RU13 (operator ruling 2026-10-08, supersedes the U1-probe fallback): FULL TypeScript 7.0.2 as the `typescript` package with Kit 3.0.1. Where Kit, svelte-check, svelte2tsx, @sveltejs/package, vite-plugin-svelte or typescript-eslint need a change for TS 7, the fix is a minimal patch from the shared set under patches/ in roachbait.band (pnpm patchedDependencies or a Bazel patch on npm_translate_lock), or the tool's TS 7 native mode (svelte-check --tsgo) with the gap documented. Any npm: alias that installs a different TypeScript (for example npm:typescript@6.0.3 under another name) is reported as ALIAS-DRIFT.",
+		"effect": "R-C444 (operator, relayed in TIN-5770) amends RU1: Effect target is 4.0.2 (published 2026-10-07).",
+		"adapters": "Adapters and vite-plugin-svelte are exact here because they move in lockstep with Kit 3 (adapter API changes); repos without an adapter simply omit it.",
+		"typescript6-companion": "RU13b (operator, 2026-10-14): TS 7.0.2 is the `typescript` package and does all type checking. @typescript/typescript6 (6.0.2, which resolves typescript@6.0.3) is allowed only as the in-process parser for Kit sync, svelte2tsx and typescript-eslint until TS 7 ships a JS API. It is not an npm: alias of `typescript`, so this checker does not flag it; copy the companion wiring (.pnpmfile.cjs, package.json pnpm block, patches/) from roachbait.band main."
+	}
+}

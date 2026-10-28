@@ -1,0 +1,7 @@
+node_modules/
+.svelte-kit/
+.svelte-check/
+build/
+bazel-*
+user.bazelrc
+.env

@@ -1,0 +1,214 @@
+
+load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_run_binary", "js_test")
+load("@aspect_rules_js//npm:defs.bzl", "npm_link_package")
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@npm//:eslint/package_json.bzl", eslint_bin = "bin")
+load("@npm//:prettier/package_json.bzl", prettier_bin = "bin")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+
+npm_link_all_packages(name = "node_modules")
+
+npm_link_package(
+    name = "node_modules/@tummycrypt/vite-plugin-a11y",
+    src = "@tummycrypt_vite_plugin_a11y//:pkg",
+)
+npm_link_package(
+    name = "node_modules/@tummycrypt/vite-plugin-skeleton-colors",
+    src = "@tummycrypt_vite_plugin_skeleton_colors//:pkg",
+)
+npm_link_package(
+    name = "node_modules/@tummycrypt/tinyland-color-utils",
+    src = "@tummycrypt_tinyland_color_utils//:pkg",
+)
+npm_link_package(
+    name = "node_modules/@tummycrypt/tinyvectors",
+    src = "@tummycrypt_tinyvectors//:pkg",
+)
+
+npm_link_package(
+    name = "node_modules/@xoxd/public-chrome",
+    src = "@xoxd_public_chrome//:pkg",
+)
+
+npm_link_package(
+    name = "node_modules/@xoxd/theme",
+    src = "@xoxd_theme//:pkg",
+)
+
+TINYLAND_HOUSE_PACKAGES = [
+    ":node_modules/@xoxd/theme",
+    ":node_modules/@xoxd/public-chrome",
+    ":node_modules/@tummycrypt/vite-plugin-a11y",
+    ":node_modules/@tummycrypt/vite-plugin-skeleton-colors",
+    ":node_modules/@tummycrypt/tinyland-color-utils",
+    ":node_modules/@tummycrypt/tinyvectors",
+]
+
+APP_NPM_PACKAGES = [
+    ":node_modules/@fontsource/inter",
+    ":node_modules/@lucide/svelte",
+    ":node_modules/@skeletonlabs/skeleton",
+    ":node_modules/@skeletonlabs/skeleton-svelte",
+    ":node_modules/@sveltejs/adapter-static",
+    ":node_modules/@sveltejs/kit",
+    ":node_modules/@sveltejs/vite-plugin-svelte",
+    ":node_modules/@tailwindcss/vite",
+    ":node_modules/@types/node",
+    ":node_modules/magic-string",
+    ":node_modules/mdsvex",
+    ":node_modules/rollup-plugin-visualizer",
+    ":node_modules/shiki",
+    ":node_modules/svelte",
+    ":node_modules/tailwindcss",
+    ":node_modules/typescript",
+    ":node_modules/vite",
+] + TINYLAND_HOUSE_PACKAGES
+
+LINT_NPM_PACKAGES = [
+    ":node_modules/@eslint/js",
+    ":node_modules/eslint",
+    ":node_modules/eslint-config-prettier",
+    ":node_modules/eslint-plugin-svelte",
+    ":node_modules/globals",
+    ":node_modules/prettier",
+    ":node_modules/prettier-plugin-svelte",
+    ":node_modules/svelte",
+    ":node_modules/typescript",
+    ":node_modules/typescript-eslint",
+]
+
+TYPECHECK_NPM_PACKAGES = APP_NPM_PACKAGES + [
+    ":node_modules/svelte-check",
+    ":node_modules/vitest",
+]
+
+UNIT_TEST_NPM_PACKAGES = APP_NPM_PACKAGES + [
+    ":node_modules/@vitest/coverage-v8",
+    ":node_modules/vitest",
+]
+
+filegroup(
+    name = "app_srcs",
+    srcs = glob(["src/**", "static/**", "scripts/bazel/**/*.mjs"], allow_empty = True) + [".npmrc", "package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", "kit.adapter.js", "tsconfig.json", "vite.config.ts"],
+)
+
+js_binary(
+    name = "sveltekit_sync_bin",
+    data = APP_NPM_PACKAGES,
+    entry_point = "scripts/bazel/run-sveltekit-sync.mjs",
+)
+
+
+# SvelteKit 3 `svelte-kit sync` writes route types under .svelte-kit and the
+# parent tsconfig plus `$app/types` under node_modules/$app (tsconfig.json
+# extends "$app/tsconfig"); both trees are declared outputs.
+js_run_binary(
+    name = "sveltekit_types",
+    srcs = [":app_srcs"],
+    out_dirs = [
+        ".svelte-kit",
+        "node_modules/$app",
+    ],
+    tool = ":sveltekit_sync_bin",
+)
+
+
+copy_to_directory(
+    name = "app_workspace",
+    srcs = [
+        ":app_srcs",
+        ":sveltekit_types",
+        "MODULE.bazel",
+    ],
+    hardlink = "off",
+    root_paths = ["."],
+)
+
+
+js_binary(
+    name = "svelte_check_bin",
+    data = TYPECHECK_NPM_PACKAGES + ["scripts/bazel/prepare-sveltekit-types.mjs"],
+    entry_point = "scripts/bazel/run-svelte-check.mjs",
+    tags = [
+        "manual",
+        "no-remote-exec",
+    ],
+)
+
+
+# TypeScript 7.0.2 checks through svelte-check's native mode (`--tsgo`) on a
+# writable scratch copy of :app_workspace (--tsgo writes into .svelte-kit).
+js_test(
+    name = "svelte_check_test",
+    args = [
+        "--workspace",
+        "$(rootpath :app_workspace)",
+    ],
+    data = [
+        ":app_workspace",
+        "scripts/bazel/prepare-sveltekit-types.mjs",
+    ] + TYPECHECK_NPM_PACKAGES,
+    entry_point = "scripts/bazel/run-svelte-check.mjs",
+    timeout = "long",
+)
+
+# Seeded-error canary: fails unless svelte-check --tsgo reports a seeded .ts
+# and .svelte type error (guards against a check that silently checks nothing).
+js_test(
+    name = "svelte_check_canary_test",
+    args = [
+        "--workspace",
+        "$(rootpath :app_workspace)",
+        "--canary",
+    ],
+    data = [
+        ":app_workspace",
+        "scripts/bazel/prepare-sveltekit-types.mjs",
+    ] + TYPECHECK_NPM_PACKAGES,
+    entry_point = "scripts/bazel/run-svelte-check.mjs",
+    timeout = "long",
+)
+
+
+js_binary(
+    name = "vite_build_bin",
+    data = APP_NPM_PACKAGES + ["scripts/bazel/prepare-sveltekit-types.mjs"],
+    entry_point = "scripts/bazel/run-vite-build.mjs",
+)
+
+
+js_run_binary(
+    name = "build",
+    args = [
+        "--workspace",
+        "$(rootpath :app_workspace)",
+        "--output-dir",
+        "build",
+    ],
+    srcs = [":app_workspace"],
+    out_dirs = ["build"],
+    patch_node_fs = False,
+    stamp = 1,
+    
+    tool = ":vite_build_bin",
+    visibility = ["//visibility:public"],
+)
+
+
+js_binary(
+    name = "dev",
+    data = APP_NPM_PACKAGES,
+    patch_node_fs = False,
+    entry_point = "scripts/bazel/run-vite-dev.mjs",
+    tags = [
+        "manual",
+        "no-remote-exec",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+
+pkg_tar(name = "deployment_bundle", srcs = [":build"], extension = "tar.gz", visibility = ["//visibility:public"])
+
+exports_files(["MODULE.bazel", "package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", ".npmrc", "kit.adapter.js"], visibility = ["//visibility:public"])

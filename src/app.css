@@ -1,0 +1,15 @@
+@import 'tailwindcss';
+@import '@fontsource/inter/latin-400.css';
+@import '@fontsource/inter/latin-500.css';
+@import '@fontsource/inter/latin-600.css';
+@import '@fontsource/inter/latin-700.css';
+@import '@skeletonlabs/skeleton';
+@import '@skeletonlabs/skeleton-svelte';
+@import '@xoxd/theme/theme/fonts.css';
+@import '@xoxd/theme/theme/tailwind.css';
+@import '@xoxd/theme/theme/theme-xoxd.css';
+@import '@xoxd/theme/theme/base.css';
+@import '@xoxd/public-chrome/styles.css';
+
+@source '../node_modules/@skeletonlabs/skeleton-svelte/dist';
+@source '../node_modules/@xoxd/public-chrome';

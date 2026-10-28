@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="xoxd.ai">
+  <rect width="64" height="64" rx="12" fill="#020103" />
+  <g transform="translate(8 8) scale(2)" fill="none" stroke="#f7f3fc" stroke-width="1.6" stroke-linecap="round">
+	<!-- glyph -->
+	<circle cx="12" cy="12" r="5" />
+	<g transform="rotate(-22 12 12)">
+		<ellipse cx="12" cy="12" rx="10.5" ry="3" />
+	</g>
+	<!-- /glyph -->
+  </g>
+</svg>
