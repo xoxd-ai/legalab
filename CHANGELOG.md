@@ -10,3 +10,5 @@
 - Stub routes: `/`, `/about`, `/links`, `/privacy` and `/terms`.
 - `just contract` adds the in-house package parity check and the estate
   framework version check.
+- Draft pages, not in force: `/waitlist` (form switched off), `/warranty`,
+  `/pledge`, `/returns` and `/shipping`, each with a draft notice.
