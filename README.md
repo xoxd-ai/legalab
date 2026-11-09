@@ -45,6 +45,14 @@ packages come from the frozen pnpm lock. `package.json` carries no
 | `/links` | stub, renders `rel="me"` profile links once accounts exist |
 | `/privacy` | stub, no policy in force |
 | `/terms` | stub, no terms in force |
+| `/waitlist` | draft stub, form switched off, no backend |
+| `/warranty` | draft written limited warranty, not in force |
+| `/pledge` | draft non-contractual pledge, not a warranty |
+| `/returns` | draft 30-day returns page, not in force |
+| `/shipping` | placeholder listing the shipping decisions still open |
+
+Every draft page carries a draft notice that lists what is still open.
+Bracketed text on those pages is a placeholder for a decision not yet made.
 
 ## Content rules
 

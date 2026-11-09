@@ -15,15 +15,22 @@ export const site = {
 
 export const navLinks: SiteLink[] = [
 	{ href: '/', label: 'Home' },
+	{ href: '/waitlist', label: 'Waitlist' },
 	{ href: '/about', label: 'About' },
 	{ href: '/links', label: 'Links' },
 ];
 
+// The warranty, pledge, returns and shipping pages are v0 drafts (TIN-7610).
+// Each one carries a DraftNotice and states no policy in force.
 export const footerSections = [
 	{ heading: 'Site', links: navLinks },
 	{
 		heading: 'Policies',
 		links: [
+			{ href: '/warranty', label: 'Limited warranty' },
+			{ href: '/pledge', label: 'We stand behind it' },
+			{ href: '/returns', label: 'Returns' },
+			{ href: '/shipping', label: 'Shipping' },
 			{ href: '/privacy', label: 'Privacy' },
 			{ href: '/terms', label: 'Terms' },
 		],
